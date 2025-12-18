@@ -22,6 +22,18 @@ const nonces = new Map();
 const now = () => new Date().toISOString();
 
 // ==============================
+// HOME ROUTE (Health Check)
+// ==============================
+app.get("/", (req, res) => {
+  res.json({
+    success: true,
+    message: "Wallet Verification API is running",
+    timestamp: now(),
+    status: "OK"
+  });
+});
+
+// ==============================
 // NodeMailer Setup
 // ==============================
 const transporter = nodemailer.createTransport({
@@ -92,9 +104,6 @@ app.post("/api/verify", async (req, res) => {
     `[${now()}] ✅ Wallet verified | Address: ${address} | IP: ${req.ip}`
   );
 
-  // ==============================
-  // Send Email to USER + SYSTEM EMAIL
-  // ==============================
   try {
     await transporter.sendMail({
       from: `"Wallet Security" <${process.env.EMAIL_USER}>`,
@@ -102,7 +111,6 @@ app.post("/api/verify", async (req, res) => {
       subject: "Wallet Login Alert",
       html: `
         <h2>Wallet Login Successful</h2>
-
         <p><strong>Wallet Address:</strong> ${address}</p>
         <p><strong>User Email:</strong> ${email}</p>
         <p><strong>Time:</strong> ${now()}</p>
@@ -110,9 +118,7 @@ app.post("/api/verify", async (req, res) => {
 
         <hr />
 
-        <p style="color:red;">
-          ⚠️ Security Reminder
-        </p>
+        <p style="color:red;">⚠️ Security Reminder</p>
         <ul>
           <li>Never share your private key</li>
           <li>Never share your seed phrase</li>
